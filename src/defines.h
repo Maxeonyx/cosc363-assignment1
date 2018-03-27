@@ -13,10 +13,8 @@ typedef struct
 
 typedef struct
 {
-	float x;
-	float y;
-	float z;
-	Rotation rot;
+	float rotation;
+	float circlePos;
 } Person;
 
 typedef enum {
