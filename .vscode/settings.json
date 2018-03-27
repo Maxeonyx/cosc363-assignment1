@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "math.h": "c",
+        "defines.h": "c",
+        "freeglut.h": "c"
+    }
+}
