@@ -12,7 +12,9 @@ void igloo(
 	unsigned int seed)
 {
 	srand(seed);
-	int base_num_cubes = 40;
+
+	float door_offset_angle = TAU/2;
+	float door_proportion = TAU/10.f;
 	float height_circumference = 8.f * TAU / 4;
 	float num_layers = height_circumference / (cube_height + cube_height_gap);
 	for (float height_lerp = 0.f; height_lerp < 1.f; height_lerp += 1.f / num_layers)
@@ -24,6 +26,9 @@ void igloo(
 		for (float lerp = 0.f; lerp < 1.f; lerp += 1.f / num_cubes)
 		{
 			float cur_angle = lerp * TAU;
+			float door_height_proportion = 0.3;
+			float door_outline_angle = door_proportion * cos((height_lerp/door_height_proportion)*TAU/4) * 0.6f;
+			if (cur_angle > door_offset_angle - door_outline_angle && cur_angle < door_offset_angle + door_outline_angle) continue;
 			float blockScaleRando = ((float)(rand() % 10 - 3) / 30.f) + 1.f;
 			glPushMatrix();
 			{
