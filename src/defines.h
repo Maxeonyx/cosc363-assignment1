@@ -29,7 +29,8 @@ typedef struct
 
 typedef enum {
 	Bigloo,
-	Inside
+	Inside,
+	PersonView
 } CameraState;
 
 typedef struct

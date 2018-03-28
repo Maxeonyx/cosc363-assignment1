@@ -39,12 +39,48 @@ static Camera _camera_1 = {
 	.angleUp = 0.f,
 };
 
+static Camera _camera_2 = {
+	.x = -25.f,
+	.y = 2.f,
+	.z = 0.f,
+	.angle = 0.f,
+	.angleUp = 0.f,
+};
+
 static Person _people[NUM_PEOPLE] = {0};
 
 static unsigned int _igloo_seed = 0;
 
 // 1000 milliseconds divided by X FPS
 static unsigned int _step_millis = (unsigned int)(1000 / 60);
+
+float personx()
+{
+	float radius = 20.f;
+	float circlePosRads = _people[0].circlePos * (TAU / 360.f);
+	float x = radius * cos(circlePosRads);
+	float z = radius * sin(circlePosRads);
+	float y = 3.5f;
+	return x;
+}
+float persony()
+{
+	float radius = 20.f;
+	float circlePosRads = _people[0].circlePos * (TAU / 360.f);
+	float x = radius * cos(circlePosRads);
+	float z = radius * sin(circlePosRads);
+	float y = 3.5f;
+	return y;
+}
+float personz()
+{
+	float radius = 20.f;
+	float circlePosRads = _people[0].circlePos * (TAU / 360.f);
+	float x = radius * cos(circlePosRads);
+	float z = radius * sin(circlePosRads);
+	float y = 3.5f;
+	return z;
+}
 
 void camera(void)
 {
@@ -61,6 +97,13 @@ void camera(void)
 	float diagonal = sqrt(vector_x * vector_x + vector_z * vector_z);
 	float vector_y = diagonal * tan(_camera_1.angleUp);
 
+	float vector2_x = cos((_people[0].circlePos + 180) * TAU / 360.f);
+	float vector2_z = sin((_people[0].circlePos + 180) * TAU / 360.f);
+	float dia2gonal = sqrt(vector2_x * vector2_x + vector2_z * vector2_z);
+
+	float vector3_x = cos((_people[0].circlePos + 180) * TAU / 360.f);
+	float vector3_z = sin((_people[0].circlePos + 180) * TAU / 360.f);
+
 	if (_camera_state == Inside)
 	{
 		gluLookAt(5.3f, 5.3f, -5.3f, 0.f, 1.f, 0.f, 0, 1, 0);
@@ -68,6 +111,16 @@ void camera(void)
 	else if (_camera_state == Bigloo)
 	{
 		gluLookAt(_camera_1.x, _camera_1.y, _camera_1.z, _camera_1.x + vector_x, _camera_1.y + vector_y, _camera_1.z + vector_z, 0, 1, 0);
+	}
+	else if (_camera_state == PersonView)
+	{
+		float theta1 = (_people[0].circlePos) * TAU / 360.f;
+		float theta2 = (_people[0].rotation) * TAU / 360.f;
+
+		float upx = sin(theta2) * sin(theta1);
+		float upy = cos(theta2);
+		float upz = sin(theta2) * cos(theta1);
+		gluLookAt(personx()*0.2f, persony()*0.2f, personz()*0.2f, 0, persony()*0.2f, 0, upx, upy, upz);
 	}
 }
 
@@ -99,11 +152,19 @@ void input_special(int key, int x, int y)
 {
 	if (key == GLUT_KEY_UP)
 	{
-		_camera_1.angleUp += TAU / 30;
+		float movement_distance = 0.5f;
+		float vector_x = movement_distance * cos(_camera_1.angle);
+		float vector_z = movement_distance * sin(_camera_1.angle);
+		_camera_1.x += vector_x;
+		_camera_1.z += vector_z;
 	}
 	if (key == GLUT_KEY_DOWN)
 	{
-		_camera_1.angleUp -= TAU / 30;
+		float movement_distance = 0.5f;
+		float vector_x = movement_distance * cos(_camera_1.angle);
+		float vector_z = movement_distance * sin(_camera_1.angle);
+		_camera_1.x -= vector_x;
+		_camera_1.z -= vector_z;
 	}
 	if (key == GLUT_KEY_LEFT)
 	{
@@ -120,6 +181,10 @@ void input_special(int key, int x, int y)
 	if (key == GLUT_KEY_F2)
 	{
 		_camera_state = Bigloo;
+	}
+	if (key == GLUT_KEY_F3)
+	{
+		_camera_state = PersonView;
 	}
 }
 
