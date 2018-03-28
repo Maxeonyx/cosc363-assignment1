@@ -1,5 +1,6 @@
 #include <GL/freeglut.h>
 #include <time.h>
+#include <math.h>
 #include "loadTGA.h"
 
 #include "defines.h"
@@ -11,7 +12,7 @@
 #define PEOPLE_SPINSPEED_DEGREES_PER_FRAME 4.f
 #define PEOPLE_CIRCLESPEED_DEGREES_PER_FRAME 1.f
 
-#define NUM_TEXTURES 7
+#define NUM_TEXTURES 9
 
 static const char *_textures[NUM_TEXTURES] = {
 	"bottom.tga",
@@ -21,6 +22,8 @@ static const char *_textures[NUM_TEXTURES] = {
 	"skyRight.tga",
 	"skyTop.tga",
 	"pizza.tga",
+	"pizza2.tga",
+	"pizza3.tga",
 };
 
 static GLuint _textureIds[NUM_TEXTURES];
@@ -172,14 +175,14 @@ void display(void)
 		glPushMatrix();
 		glBegin(GL_QUADS);
 		{
-			glNormal3f(0.f, 1.f, 0.f);
+			glNormal3f(0.f, 33.3f, 0.f);
 			glTexCoord2f(0.f, 0.f);
 			glVertex3f(-1000.f, 0.f, -1000.f);
-			glTexCoord2f(1.f, 0.f);
+			glTexCoord2f(33.3f, 0.f);
 			glVertex3f(1000.f, 0.f, -1000.f);
-			glTexCoord2f(1.f, 1.f);
+			glTexCoord2f(33.3f, 33.3f);
 			glVertex3f(1000.f, 0.f, 1000.f);
-			glTexCoord2f(0.f, 1.f);
+			glTexCoord2f(0.f, 33.3f);
 			glVertex3f(-1000.f, 0.f, 1000.f);
 		}
 		glEnd();
@@ -311,11 +314,12 @@ void display(void)
 		}
 		glPopMatrix();
 
-		// discoball inside
+		// teapot
 		glPushMatrix();
 		{
-			glColor3f(1.f, .4f, .4f);
-			glTranslatef(0.f, 1.f + fabs(sin(TAU * _people[0].rotation / 360.f)), -3.f);
+			glColor3f(1.f, 0.f, 0.f);
+			glTranslatef(0.f, 1.f + fabs(sin(TAU * _people[0].rotation / 360.f)), 0.f);
+			glRotatef(90, 0, 1, 0);
 			glutSolidTeapot(1);
 		}
 		glPopMatrix();
@@ -325,8 +329,62 @@ void display(void)
 		{
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, _textureIds[6]);
-			glTranslatef(5.3f, 1.5f, 5.3f);
-			glRotatef(_camera_1.angle * 360.f/TAU, 0.f, 1.f, 0.f);
+			Point pizza_pos = {.x = 5.3f, .y = 1.5f + sin(TAU * _people[0].rotation / 7 / 360.f) / 4, .z = 5.3f};
+			Point pizza_camera_vector = {.x = _camera_1.x - pizza_pos.x, .y = _camera_1.y - pizza_pos.y, .z = _camera_1.z - pizza_pos.z};
+			float angle = atan2(pizza_camera_vector.x, pizza_camera_vector.z);
+			glTranslatef(pizza_pos.x, pizza_pos.y, pizza_pos.z);
+			glScalef(3.f, 3.f, 3.f);
+			glRotatef(angle * 360.f / TAU, 0.f, 1.f, 0.f);
+			glBegin(GL_TRIANGLES);
+			{
+				glTexCoord2f(0.04f, 0.25f);
+				glVertex3f(0.04f, 0.25f, 0.f);
+				glTexCoord2f(0.54f, 0.f);
+				glVertex3f(0.54f, 0.f, 0.f);
+				glTexCoord2f(0.8f, 0.87f);
+				glVertex3f(0.8f, 0.87f, 0.f);
+			}
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		}
+		glPopMatrix();
+
+		// pizza 2
+		glPushMatrix();
+		{
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, _textureIds[7]);
+			Point pizza_pos = {.x = 3.f, .y = 1.5f + sin(TAU * (_people[0].rotation + 80) / 6 / 360.f) / 4, .z = 6.f};
+			Point pizza_camera_vector = {.x = _camera_1.x - pizza_pos.x, .y = _camera_1.y - pizza_pos.y, .z = _camera_1.z - pizza_pos.z};
+			float angle = atan2(pizza_camera_vector.x, pizza_camera_vector.z);
+			glTranslatef(pizza_pos.x, pizza_pos.y, pizza_pos.z);
+			glScalef(3.f, 3.f, 3.f);
+			glRotatef(angle * 360.f / TAU, 0.f, 1.f, 0.f);
+			glBegin(GL_TRIANGLES);
+			{
+				glTexCoord2f(0.15f, 0.12f);
+				glVertex3f(0.15f, 0.12f, 0.f);
+				glTexCoord2f(0.5f, 0.f);
+				glVertex3f(0.5f, 0.f, 0.f);
+				glTexCoord2f(0.5f, 0.5f);
+				glVertex3f(0.5f, 0.5f, 0.f);
+			}
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		}
+		glPopMatrix();
+
+		// pizza 3
+		glPushMatrix();
+		{
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, _textureIds[8]);
+			Point pizza_pos = {.x = 7.f, .y = 1.5f + sin(TAU * (_people[0].rotation - 110) / 8 / 360.f) / 4, .z = 3.3f};
+			Point pizza_camera_vector = {.x = _camera_1.x - pizza_pos.x, .y = _camera_1.y - pizza_pos.y, .z = _camera_1.z - pizza_pos.z};
+			float angle = atan2(pizza_camera_vector.x, pizza_camera_vector.z);
+			glTranslatef(pizza_pos.x, pizza_pos.y, pizza_pos.z);
+			glScalef(3.f, 3.f, 3.f);
+			glRotatef(angle * 360.f / TAU, 0.f, 1.f, 0.f);
 			glBegin(GL_TRIANGLES);
 			{
 				glTexCoord2f(0.04f, 0.25f);
