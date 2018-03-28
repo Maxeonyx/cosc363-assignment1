@@ -11,7 +11,7 @@
 #define PEOPLE_SPINSPEED_DEGREES_PER_FRAME 4.f
 #define PEOPLE_CIRCLESPEED_DEGREES_PER_FRAME 1.f
 
-#define NUM_TEXTURES 6
+#define NUM_TEXTURES 7
 
 static const char *_textures[NUM_TEXTURES] = {
 	"bottom.tga",
@@ -20,6 +20,7 @@ static const char *_textures[NUM_TEXTURES] = {
 	"skyLeft.tga",
 	"skyRight.tga",
 	"skyTop.tga",
+	"pizza.tga",
 };
 
 static GLuint _textureIds[NUM_TEXTURES];
@@ -28,11 +29,11 @@ static GLuint _textureIds[NUM_TEXTURES];
 static CameraState _camera_state = Bigloo;
 
 static Camera _camera_1 = {
-	.x = -20.f,
+	.x = -25.f,
 	.y = 2.f,
-	.z = -10.f,
-	.angle = -2 * TAU / 20.f,
-	.angleUp = TAU / 20.f,
+	.z = 0.f,
+	.angle = 0.f,
+	.angleUp = 0.f,
 };
 
 static Person _people[NUM_PEOPLE] = {0};
@@ -129,12 +130,13 @@ void display(void)
 	float l0pos[4] = {-0.4f, 0.3f, -0.4f, 0.f};
 	glLightfv(GL_LIGHT0, GL_POSITION, l0pos);
 
-	float l1pos[4] = {0.f, 1.f, 0.f, 0.f};
-	//float l1dir[3] = {cos(TAU*_people[0].rotation/360.f), .4f, sin(TAU*_people[0].rotation/360.f)};
-	float l1dir[3] = {0, 1, 0};
+	float l1pos[4] = {0, 4, 0, 1.f};
+	float vector_x = cos(TAU * _people[0].rotation / 360.f);
+	float vector_z = sin(TAU * _people[0].rotation / 360.f);
+	float diagonal = sqrt(vector_x * vector_x + vector_z * vector_z);
+	float vector_y = 0.f;
+	float l1dir[3] = {vector_x, vector_y, vector_z};
 	glLightfv(GL_LIGHT1, GL_POSITION, l1pos);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.f);
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 1.2f);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, l1dir);
 
 	// interior
@@ -164,24 +166,110 @@ void display(void)
 	// exterior
 	glPushMatrix();
 	{
-		// floor
 		glEnable(GL_TEXTURE_2D);
+		// floor
 		glBindTexture(GL_TEXTURE_2D, _textureIds[0]);
 		glPushMatrix();
 		glBegin(GL_QUADS);
 		{
 			glNormal3f(0.f, 1.f, 0.f);
 			glTexCoord2f(0.f, 0.f);
-			glVertex3f(-100.f, 0.f, -100.f);
+			glVertex3f(-1000.f, 0.f, -1000.f);
 			glTexCoord2f(1.f, 0.f);
-			glVertex3f(100.f, 0.f, -100.f);
+			glVertex3f(1000.f, 0.f, -1000.f);
 			glTexCoord2f(1.f, 1.f);
-			glVertex3f(100.f, 0.f, 100.f);
+			glVertex3f(1000.f, 0.f, 1000.f);
 			glTexCoord2f(0.f, 1.f);
-			glVertex3f(-100.f, 0.f, 100.f);
+			glVertex3f(-1000.f, 0.f, 1000.f);
 		}
 		glEnd();
 		glPopMatrix();
+		// north (+z)
+		glBindTexture(GL_TEXTURE_2D, _textureIds[1]);
+		glPushMatrix();
+		glBegin(GL_QUADS);
+		{
+			glNormal3f(0.f, 0.f, -1.f);
+			glTexCoord2f(0.f, 0.f);
+			glVertex3f(-1000.f, 0.f, -1000.f);
+			glTexCoord2f(1.f, 0.f);
+			glVertex3f(1000.f, 0.f, -1000.f);
+			glTexCoord2f(1.f, 1.f);
+			glVertex3f(1000.f, 500.f, -1000.f);
+			glTexCoord2f(0.f, 1.f);
+			glVertex3f(-1000.f, 500.f, -1000.f);
+		}
+		glEnd();
+		glPopMatrix();
+		// south (-z)
+		glBindTexture(GL_TEXTURE_2D, _textureIds[2]);
+		glPushMatrix();
+		glBegin(GL_QUADS);
+		{
+			glNormal3f(0.f, 0.f, -1.f);
+			glTexCoord2f(0.f, 0.f);
+			glVertex3f(1000.f, 0.f, 1000.f);
+			glTexCoord2f(1.f, 0.f);
+			glVertex3f(-1000.f, 0.f, 1000.f);
+			glTexCoord2f(1.f, 1.f);
+			glVertex3f(-1000.f, 500.f, 1000.f);
+			glTexCoord2f(0.f, 1.f);
+			glVertex3f(1000.f, 500.f, 1000.f);
+		}
+		glEnd();
+		glPopMatrix();
+		// east (+x)
+		glBindTexture(GL_TEXTURE_2D, _textureIds[4]);
+		glPushMatrix();
+		glBegin(GL_QUADS);
+		{
+			glNormal3f(0.f, 0.f, -1.f);
+			glTexCoord2f(0.f, 0.f);
+			glVertex3f(1000.f, 0.f, -1000.f);
+			glTexCoord2f(1.f, 0.f);
+			glVertex3f(1000.f, 0.f, 1000.f);
+			glTexCoord2f(1.f, 1.f);
+			glVertex3f(1000.f, 500.f, 1000.f);
+			glTexCoord2f(0.f, 1.f);
+			glVertex3f(1000.f, 500.f, -1000.f);
+		}
+		glEnd();
+		glPopMatrix();
+		// west (-x)
+		glBindTexture(GL_TEXTURE_2D, _textureIds[3]);
+		glPushMatrix();
+		glBegin(GL_QUADS);
+		{
+			glNormal3f(0.f, 0.f, -1.f);
+			glTexCoord2f(0.f, 0.f);
+			glVertex3f(-1000.f, 0.f, 1000.f);
+			glTexCoord2f(1.f, 0.f);
+			glVertex3f(-1000.f, 0.f, -1000.f);
+			glTexCoord2f(1.f, 1.f);
+			glVertex3f(-1000.f, 500.f, -1000.f);
+			glTexCoord2f(0.f, 1.f);
+			glVertex3f(-1000.f, 500.f, 1000.f);
+		}
+		glEnd();
+		glPopMatrix();
+		// top (-x)
+		glBindTexture(GL_TEXTURE_2D, _textureIds[5]);
+		glPushMatrix();
+		glBegin(GL_QUADS);
+		{
+			glNormal3f(0.f, 0.f, -1.f);
+			glTexCoord2f(1.f, 1.f);
+			glVertex3f(-1000.f, 500.f, -1000.f);
+			glTexCoord2f(0.f, 1.f);
+			glVertex3f(1000.f, 500.f, -1000.f);
+			glTexCoord2f(0.f, 0.f);
+			glVertex3f(1000.f, 500.f, 1000.f);
+			glTexCoord2f(1.f, 0.f);
+			glVertex3f(-1000.f, 500.f, 1000.f);
+		}
+		glEnd();
+		glPopMatrix();
+
 		glDisable(GL_TEXTURE_2D);
 
 		// main igloo
@@ -213,6 +301,7 @@ void display(void)
 			discoball();
 		}
 		glPopMatrix();
+
 		// discoball inside
 		glPushMatrix();
 		{
@@ -228,6 +317,27 @@ void display(void)
 			glColor3f(1.f, .4f, .4f);
 			glTranslatef(0.f, 1.f + fabs(sin(TAU * _people[0].rotation / 360.f)), -3.f);
 			glutSolidTeapot(1);
+		}
+		glPopMatrix();
+
+		// pizza
+		glPushMatrix();
+		{
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, _textureIds[6]);
+			glTranslatef(5.3f, 1.5f, 5.3f);
+			glRotatef(_camera_1.angle * 360.f/TAU, 0.f, 1.f, 0.f);
+			glBegin(GL_TRIANGLES);
+			{
+				glTexCoord2f(0.04f, 0.25f);
+				glVertex3f(0.04f, 0.25f, 0.f);
+				glTexCoord2f(0.54f, 0.f);
+				glVertex3f(0.54f, 0.f, 0.f);
+				glTexCoord2f(0.8f, 0.87f);
+				glVertex3f(0.8f, 0.87f, 0.f);
+			}
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
 		}
 		glPopMatrix();
 	}
@@ -272,7 +382,19 @@ int main(int argc, char **argv)
 	glClearColor(0.3f, 0.3f, 0.3f, 1.f);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	float l0_diff_color[4] = {1.f, 1.f, .9f, 1.f};
+	float l0_spec_color[4] = {1.f, 1.f, .9f, 1.f};
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, l0_diff_color);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, l0_spec_color);
+
 	glEnable(GL_LIGHT1);
+	float l1_diff_color[4] = {0.f, 1.f, 0.f, 1.f};
+	float l1_spec_color[4] = {0.f, 1.f, 0.f, 1.f};
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, l1_diff_color);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, l1_spec_color);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 20.f);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 1.2f);
+
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
@@ -281,7 +403,7 @@ int main(int argc, char **argv)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//glFrustum(-.1, .1, -.1, .1, 0.3f, 10.f);
-	gluPerspective(60.f, 16.f / 9.f, 0.1f, 100.f);
+	gluPerspective(60.f, 16.f / 9.f, 0.1f, 10000.f);
 
 	init();
 	textures();
